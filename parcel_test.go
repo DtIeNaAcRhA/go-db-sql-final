@@ -90,7 +90,7 @@ func TestSetAddress(t *testing.T) {
 	getedParcel := Parcel{}
 	getedParcel, err = store.Get(number)
 	require.NoError(t, err)
-	require.Equal(t, newAddress, getedParcel.Address)
+	assert.Equal(t, newAddress, getedParcel.Address)
 
 }
 
@@ -103,6 +103,7 @@ func TestSetStatus(t *testing.T) {
 
 	store := NewParcelStore(db)
 	parcel := getTestParcel()
+	newStatus := "sent"
 
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
@@ -113,7 +114,7 @@ func TestSetStatus(t *testing.T) {
 
 	// set status
 	// обновите статус, убедитесь в отсутствии ошибки
-	err = store.SetStatus(number, "sent")
+	err = store.SetStatus(number, newStatus)
 	require.NoError(t, err)
 
 	// check
@@ -121,7 +122,7 @@ func TestSetStatus(t *testing.T) {
 	getedParcel := Parcel{}
 	getedParcel, err = store.Get(number)
 	require.NoError(t, err)
-	require.Equal(t, "sent", getedParcel.Status)
+	assert.Equal(t, newStatus, getedParcel.Status)
 }
 
 // TestGetByClient проверяет получение посылок по идентификатору клиента
@@ -166,7 +167,7 @@ func TestGetByClient(t *testing.T) {
 	// убедитесь в отсутствии ошибки
 	require.NoError(t, err)
 	// убедитесь, что количество полученных посылок совпадает с количеством добавленных
-	assert.Equal(t, len(storedParcels), len(parcels))
+	assert.Len(t, parcels, len(storedParcels))
 
 	// check
 	for _, parcel := range storedParcels {
@@ -175,10 +176,7 @@ func TestGetByClient(t *testing.T) {
 		// убедитесь, что значения полей полученных посылок заполнены верно
 		expectedParsel := parcelMap[parcel.Number]
 		assert.NotEmpty(t, expectedParsel)
-		assert.Equal(t, expectedParsel.Client, parcel.Client)
-		assert.Equal(t, expectedParsel.Address, parcel.Address)
-		assert.Equal(t, expectedParsel.Status, parcel.Status)
-		assert.Equal(t, expectedParsel.CreatedAt, parcel.CreatedAt)
+		assert.Equal(t, expectedParsel, parcel)
 
 	}
 }
